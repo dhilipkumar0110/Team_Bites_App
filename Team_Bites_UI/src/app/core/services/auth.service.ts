@@ -1,7 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { delay, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, delay, Observable, of, tap, throwError } from 'rxjs';
 import { AuthResponse, AuthUser, LoginRequest, UserRole } from '../models/user.model';
+import { HttpClient } from '@angular/common/http';
 
 const TOKEN_KEY = 'teambites_token';
 const USER_KEY = 'teambites_user';
@@ -47,18 +48,28 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.userSignal());
   readonly role = computed(() => this.userSignal()?.role ?? null);
 
-  constructor(private router: Router) {}
+  private baseUrl = 'https://localhost:7129/api';
+
+  constructor(private router: Router, private http: HttpClient) {}
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
     const entry = DEMO_USERS[credentials.email.toLowerCase()];
-    if (!entry || entry.password !== credentials.password) {
-      return throwError(() => new Error('Invalid email or password')).pipe(delay(400));
-    }
-    const token = btoa(JSON.stringify({ sub: entry.user.id, role: entry.user.role }));
-    const response: AuthResponse = { token, user: entry.user };
-    return of(response).pipe(
-      delay(500),
-      tap((res) => this.persistSession(res))
+      // if (!entry || entry.password !== credentials.password) {
+      //   return throwError(() => new Error('Invalid email or password')).pipe(delay(400));
+      // }
+      // const token = btoa(JSON.stringify({ sub: entry.user.id, role: entry.user.role }));
+      // const response: AuthResponse = { token, user: entry.user };
+      // return of(response).pipe(
+      //   delay(500),
+      //   tap((res) => this.persistSession(res))
+      // );
+
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, credentials).pipe(
+      tap((res) => this.persistSession(res)),
+      catchError((err) => {
+        const message = err.error?.message || 'Login failed';
+        return throwError(() => new Error(message));
+      })
     );
   }
 

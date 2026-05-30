@@ -40,7 +40,7 @@
   <section class="recent-section">
     <h2>Recent sessions</h2>
     <div class="session-list">
-      @for (s of sessions; track s.id) {
+      @for (s of sessions; track s.sessionId) {
         <article class="card session-row">
           <div>
             <strong>{{ s.title }}</strong>

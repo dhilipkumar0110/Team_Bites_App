@@ -33,8 +33,8 @@ public class OrderService : IOrderService
         if (session.Status != SessionStatus.Open)
             throw new InvalidOperationException("Session is not open for orders.");
 
-        if (session.Deadline < DateTime.UtcNow)
-            throw new InvalidOperationException("Order deadline has passed.");
+        //if (session.Deadline < DateTime.UtcNow)
+        //    throw new InvalidOperationException("Order deadline has passed.");
 
         var allowedMenuIds = session.SessionMenuItems.Select(sm => sm.MenuItemId).ToHashSet();
         var lines = request.Items.Where(i => i.Qty > 0).ToList();

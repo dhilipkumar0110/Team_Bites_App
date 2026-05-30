@@ -1,5 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { MockDataService } from '../../../core/services/mock-data.service';
+import { DashboardService, DishSummaryDto, SessionDto } from '../../../core/services/dashboard-service';
+import { of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-session-summary',
@@ -11,15 +13,39 @@ export class SessionSummaryComponent {
   private readonly mock = inject(MockDataService);
   readonly copied = signal(false);
   readonly closed = signal(false);
+  session: SessionDto | null = null;
+  summary: DishSummaryDto[] = [];
+  private sessionService = inject(DashboardService);
 
-  get session() {
-    return this.mock.getActiveSession();
+  ngOnInit(): void {
+    this.loadData();
   }
 
-  get summary() {
-    const s = this.session;
-    if (!s) return [];
-    return this.mock.getSessionSummary(s.id);
+  loadData() {
+    this.sessionService.getRecentSessions().pipe(
+
+      switchMap((sessions) => {
+        if (!sessions || sessions.length === 0) {
+          return of(null);
+        }
+        this.session =
+          sessions.find(s => s.status === 'Open') ?? sessions[0];
+
+        if (!this.session) {
+          return of(null);
+        }
+        return this.sessionService.getSessionSummary(this.session.sessionId);
+      })
+
+    ).subscribe({
+      next: (res) => {
+        if (!res) return;
+        this.summary = res;
+      },
+      error: (err) => {
+        console.error('Error loading summary', err);
+      }
+    });
   }
 
   get totalItems(): number {

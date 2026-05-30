@@ -28,11 +28,17 @@ public class SessionsController : ControllerBase
         }
     }
 
-    [HttpGet("active")]
-    public async Task<ActionResult<SessionDto>> GetActive(CancellationToken ct)
+    [HttpGet("getSessions")]
+    public async Task<ActionResult<SessionDto>> GetSessions(CancellationToken ct)
     {
         var session = await _sessions.GetActiveSessionAsync(ct);
         return session is null ? NotFound() : Ok(session);
+    }
+
+    [HttpGet("recent")]
+    public async Task<ActionResult<IReadOnlyList<SessionDto>>> GetRecentSessions(CancellationToken ct)
+    {
+        return Ok(await _sessions.GetRecentSessionsAsync(10, ct));
     }
 
     [HttpGet("{id:guid}/responses")]

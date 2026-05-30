@@ -9,4 +9,5 @@ public interface ISessionService
     Task<IReadOnlyList<SessionResponseDto>> GetSessionResponsesAsync(Guid sessionId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<DishSummaryDto>> GetSessionSummaryAsync(Guid sessionId, CancellationToken cancellationToken = default);
     Task CloseSessionAsync(Guid sessionId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<SessionDto>> GetRecentSessionsAsync(int count, CancellationToken ct);
 }

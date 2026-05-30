@@ -33,9 +33,9 @@
                     <p class="desc">{{ dish.description }}</p>
                   }
                   <div class="qty-control">
-                    <button type="button" class="qty-btn" (click)="changeQty(dish.id, dish.dishName, dish.type, -1)">−</button>
+                    <button type="button" class="qty-btn" (click)="changeQty(dish.id, dish.dishName, dish.type == 'Veg' ? 'Veg' : 'Non-Veg', -1)">−</button>
                     <span class="qty-val">{{ getQty(dish.id) }}</span>
-                    <button type="button" class="qty-btn" (click)="changeQty(dish.id, dish.dishName, dish.type, 1)">+</button>
+                    <button type="button" class="qty-btn" (click)="changeQty(dish.id, dish.dishName, dish.type == 'Veg' ? 'Veg' : 'Non-Veg', 1)">+</button>
                   </div>
                 </article>
               }

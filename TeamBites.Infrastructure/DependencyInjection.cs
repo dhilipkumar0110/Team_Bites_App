@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,7 @@ public static class DependencyInjection
                     ValidIssuer = jwt.Issuer,
                     ValidAudience = jwt.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret)),
-                    RoleClaimType = AuthConstants.RoleClaim,
+                    RoleClaimType = ClaimTypes.Role,
                     NameClaimType = System.Security.Claims.ClaimTypes.Name,
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };

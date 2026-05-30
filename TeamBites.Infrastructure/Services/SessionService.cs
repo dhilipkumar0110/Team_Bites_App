@@ -69,6 +69,33 @@ public class SessionService : ISessionService
         return new SessionDto(session.Id, session.Title, session.Deadline, session.Status.ToString(), menu);
     }
 
+    public async Task<IReadOnlyList<SessionDto>> GetRecentSessionsAsync(int count, CancellationToken ct)
+    {
+        var sessions = await _db.Sessions
+            .AsNoTracking()
+            .Include(s => s.SessionMenuItems)
+            .ThenInclude(sm => sm.MenuItem)
+            .OrderByDescending(s => s.CreatedAt)
+            .Take(count)
+            .ToListAsync(ct);
+
+        return sessions.Select(session =>
+        {
+            var menu = session.SessionMenuItems
+                .Select(sm => sm.MenuItem)
+                .Select(EntityMapper.ToMenuItemDto)
+                .ToList();
+
+            return new SessionDto(
+                session.Id,
+                session.Title,
+                session.Deadline,
+                session.Status.ToString(),
+                menu
+            );
+        }).ToList();
+    }
+
     public async Task<IReadOnlyList<SessionResponseDto>> GetSessionResponsesAsync(
         Guid sessionId,
         CancellationToken cancellationToken = default)

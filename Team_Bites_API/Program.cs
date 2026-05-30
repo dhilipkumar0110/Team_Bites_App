@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using TeamBites.Application;
 using TeamBites.Infrastructure;
 using TeamBites.Infrastructure.Data;
@@ -5,6 +6,7 @@ using TeamBites.Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

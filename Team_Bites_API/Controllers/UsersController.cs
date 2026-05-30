@@ -17,4 +17,5 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<EmployeeDto>>> GetEmployees(CancellationToken ct) =>
         Ok(await _users.GetEmployeesAsync(ct));
+
 }

@@ -1,11 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MockDataService } from '../../../core/services/mock-data.service';
+import { DashboardService, MenuItemDto } from '../../../core/services/dashboard-service';
+import { of, switchMap } from 'rxjs';
 
 interface CartLine {
   dishId: string;
   dishName: string;
-  type: 'Veg' | 'Non-Veg';
+  type: string;
   qty: number;
 }
 
@@ -19,22 +21,57 @@ export class MenuOrderComponent {
   private readonly mock = inject(MockDataService);
   private readonly router = inject(Router);
 
+  private sessionService = inject(DashboardService);
+
   readonly vegOnly = signal(false);
   readonly cart = signal<CartLine[]>([]);
   readonly submitted = signal(false);
+  readonly menuItems = signal<MenuItemDto[]>([]);
 
-  get session() {
-    return this.mock.getActiveSession();
+  session: any = null;
+
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData() {
+    this.sessionService.getRecentSessions().pipe(
+
+      switchMap((sessions) => {
+        if (!sessions || sessions.length === 0) return of(null);
+
+        // 🔥 pick active session
+        this.session =
+          sessions.find(s => s.status === 'Open') ?? sessions[0];
+
+        if (!this.session) return of(null);
+
+        // 🔥 get menu for session
+        return this.sessionService.getMenu(this.session.sessionId);
+      })
+
+    ).subscribe({
+      next: (menu) => {
+        if (!menu) return;
+        this.menuItems.set(menu);
+      },
+      error: (err) => {
+        console.error('Error loading menu', err);
+      }
+    });
   }
 
   readonly menu = computed(() => {
-    const s = this.session;
-    if (!s) return [];
-    let items = this.mock.getMenuForSession(s.id);
-    if (this.vegOnly()) {
-      items = items.filter((m) => m.type === 'Veg');
-    }
-    return items;
+     let items = this.menuItems(); // ✅ call signal
+
+  if (!items || items.length === 0) return [];
+
+  if (this.vegOnly()) {
+    items = items.filter((m) => m.type === 'Veg');
+  }
+
+  return items;
   });
 
   readonly categories = computed(() => {
@@ -67,7 +104,32 @@ export class MenuOrderComponent {
 
   submitOrder(): void {
     if (!this.cart().length || !this.session) return;
-    this.submitted.set(true);
-    setTimeout(() => this.router.navigate(['/employee/history']), 800);
+
+    const request = {
+      sessionId: this.session.sessionId,
+
+      // 🔥 Map your existing structure → API structure
+      items: this.cart().map(item => ({
+        menuItemId: item.dishId,   // ✅ mapping here
+        qty: item.qty         // ✅ mapping here
+      }))
+    };
+
+    this.sessionService.submitOrder(request).subscribe({
+
+      next: () => {
+        console.log('Order submitted successfully');
+
+        this.submitted.set(true);
+
+        setTimeout(() => {
+          this.router.navigate(['/employee/history']);
+        }, 800);
+      },
+      error: (err) => {
+        console.error('Order submission failed', err);
+        alert(err.error?.message || 'Failed to submit order');
+      }
+    });
   }
 }

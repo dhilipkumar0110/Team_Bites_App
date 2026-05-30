@@ -15,8 +15,8 @@
         @for (d of menuPreview; track d.id) {
           <span class="dish-chip">{{ d.dishName }}</span>
         }
-        @if (mockMenuCount > 4) {
-          <span class="dish-chip more">+{{ mockMenuCount - 4 }} more</span>
+        @if (menuCount > 4) {
+          <span class="dish-chip more">+{{ menuCount - 4 }} more</span>
         }
       </div>
       <a routerLink="/employee/menu" class="btn btn-primary cta">Choose your meal →</a>

@@ -5,7 +5,7 @@
   </header>
 
   <div class="history-list">
-    @for (order of orders; track order.id) {
+    @for (order of orders(); track order.id) {
       <article class="card history-card">
         <div class="history-head">
           <div>

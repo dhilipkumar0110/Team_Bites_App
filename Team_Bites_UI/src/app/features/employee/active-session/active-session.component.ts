@@ -2,6 +2,8 @@ import { DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MockDataService } from '../../../core/services/mock-data.service';
+import { DashboardService, MenuItemDto, SessionDto } from '../../../core/services/dashboard-service';
+import { of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-active-session',
@@ -11,21 +13,51 @@ import { MockDataService } from '../../../core/services/mock-data.service';
   styleUrl: './active-session.component.scss',
 })
 export class ActiveSessionComponent {
-  private readonly mock = inject(MockDataService);
+  private sessionService = inject(DashboardService);
 
-  get session() {
-    return this.mock.getActiveSession();
+  session: SessionDto | null = null;
+  menuItems: MenuItemDto[] = [];
+
+  ngOnInit(): void {
+    this.loadData();
   }
 
-  get menuPreview() {
-    const s = this.session;
-    if (!s) return [];
-    return this.mock.getMenuForSession(s.id).slice(0, 4);
+  loadData() {
+    this.sessionService.getRecentSessions().pipe(
+
+      switchMap((sessions) => {
+        if (!sessions || sessions.length === 0) {
+          return of(null);
+        }
+        this.session =
+          sessions.find(s => s.status === 'Open') ?? sessions[0];
+
+        if (!this.session) {
+          return of(null);
+        }
+
+        // 🔥 Call menu API with sessionId
+        return this.sessionService.getMenu(this.session.sessionId);
+      })
+
+    ).subscribe({
+      next: (menu) => {
+        if (!menu) return;
+        this.menuItems = menu;
+      },
+      error: (err) => {
+        console.error('Error loading active session menu', err);
+      }
+    });
   }
 
-  get mockMenuCount(): number {
-    const s = this.session;
-    if (!s) return 0;
-    return this.mock.getMenuForSession(s.id).length;
+  // 🔹 Show only first 4 items
+  get menuPreview(): MenuItemDto[] {
+    return this.menuItems.slice(0, 4);
+  }
+
+  // 🔹 Total count
+  get menuCount(): number {
+    return this.menuItems.length;
   }
 }

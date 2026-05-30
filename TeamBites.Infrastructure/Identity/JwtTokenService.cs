@@ -20,7 +20,7 @@ public class JwtTokenService
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
-            new(AuthConstants.RoleClaim, user.Role.ToString()),
+            new("role", user.Role.ToString()),
             new(ClaimTypes.Name, user.Name)
         };
 

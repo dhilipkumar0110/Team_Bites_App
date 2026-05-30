@@ -1,0 +1,49 @@
+<div class="page">
+  <header class="page-header row-header">
+    <div>
+      <h1>Companies</h1>
+      <p>All tenants on the Team Bites platform</p>
+    </div>
+    <a routerLink="/super-admin/companies/new" class="btn btn-primary">+ New company</a>
+  </header>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total companies</div>
+      <div class="stat-value">{{ companies.length }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Enterprise</div>
+      <div class="stat-value">{{ enterpriseCount }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total seats</div>
+      <div class="stat-value">{{ totalSeats }}</div>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Plan</th>
+          <th>Admin email</th>
+          <th>Seats</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of companies; track c.id) {
+          <tr>
+            <td><strong>{{ c.name }}</strong></td>
+            <td><span class="plan-badge plan-{{ c.plan | lowercase }}">{{ c.plan }}</span></td>
+            <td>{{ c.adminEmail }}</td>
+            <td>{{ c.seats }}</td>
+            <td>{{ c.createdAt | date: 'mediumDate' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

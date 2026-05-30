@@ -1,0 +1,45 @@
+.hero-card {
+  padding: 2rem;
+  max-width: 560px;
+  background: linear-gradient(160deg, var(--accent-soft) 0%, var(--surface) 60%);
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0.75rem 0 0.5rem;
+  }
+
+  .deadline {
+    color: var(--text-muted);
+    margin: 0 0 1.25rem;
+  }
+}
+
+.preview-dishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.dish-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+
+  &.more {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+}
+
+.cta {
+  width: 100%;
+  max-width: 280px;
+}
+
+.empty-state h3 {
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}

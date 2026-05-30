@@ -1,0 +1,29 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Audit logs</h1>
+    <p>System-wide activity for security and compliance</p>
+  </header>
+
+  <div class="card table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>User</th>
+          <th>Company</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (log of logs; track log.id) {
+          <tr>
+            <td>{{ log.action }}</td>
+            <td>{{ log.user }}</td>
+            <td>{{ log.company }}</td>
+            <td>{{ log.timestamp | date: 'medium' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

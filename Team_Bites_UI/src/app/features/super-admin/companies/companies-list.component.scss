@@ -1,0 +1,34 @@
+.row-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.table-card {
+  overflow: hidden;
+}
+
+.plan-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &.plan-starter {
+    background: #f5f5f4;
+    color: #57534e;
+  }
+
+  &.plan-growth {
+    background: var(--role-admin-soft);
+    color: var(--role-admin);
+  }
+
+  &.plan-enterprise {
+    background: var(--role-super-soft);
+    color: var(--role-super);
+  }
+}

@@ -1,0 +1,47 @@
+<div class="page">
+  <header class="page-header row-header">
+    <div>
+      <h1>Order summary</h1>
+      <p>Consolidated dish counts — ready for the restaurant</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-secondary" (click)="copySummary()">
+        {{ copied() ? 'Copied!' : 'Copy to clipboard' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="exportCsv()">Export CSV</button>
+      <button type="button" class="btn btn-primary" (click)="closeSession()" [disabled]="closed() || !session">
+        {{ closed() ? 'Session closed' : 'Close session' }}
+      </button>
+    </div>
+  </header>
+
+  @if (session && summary.length) {
+    <div class="summary-hero card">
+      <h2>{{ session.title }}</h2>
+      <p>{{ summary.length }} dishes · {{ totalItems }} total items</p>
+    </div>
+
+    <div class="summary-grid">
+      @for (d of summary; track d.dishName) {
+        <article class="card summary-card">
+          <div class="qty-badge">{{ d.totalQty }}</div>
+          <h3>{{ d.dishName }}</h3>
+          <p class="meta">{{ d.category }} · {{ d.type }}</p>
+          <p class="who">
+            <span class="label">Ordered by:</span>
+            {{ d.orderedBy.join(', ') }}
+          </p>
+        </article>
+      }
+    </div>
+
+    <div class="card preview-box">
+      <h3>Vendor text preview</h3>
+      <pre>{{ exportText }}</pre>
+    </div>
+  } @else {
+    <div class="empty-state card">
+      <p>No orders to summarize yet. Check back after employees submit.</p>
+    </div>
+  }
+</div>

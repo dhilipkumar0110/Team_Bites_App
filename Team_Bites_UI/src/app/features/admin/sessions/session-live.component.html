@@ -1,0 +1,44 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Live dashboard</h1>
+    <p>Who has submitted — updates in real time (mock)</p>
+  </header>
+
+  @if (session) {
+    <div class="live-header card">
+      <div>
+        <span class="pulse"></span>
+        <strong>{{ session.title }}</strong>
+      </div>
+      <span class="count">{{ responses.length }} submitted</span>
+    </div>
+
+    <div class="response-grid">
+      @for (r of responses; track r.userId) {
+        <article class="card response-card">
+          <div class="response-head">
+            <div class="avatar">{{ r.userName.charAt(0) }}</div>
+            <div>
+              <strong>{{ r.userName }}</strong>
+              <span class="time">{{ r.submittedAt | date: 'shortTime' }}</span>
+            </div>
+          </div>
+          <ul class="items">
+            @for (item of r.items; track item.dishName) {
+              <li>{{ item.qty }}× {{ item.dishName }}</li>
+            }
+          </ul>
+        </article>
+      } @empty {
+        <div class="empty-state card">
+          <div class="empty-icon">⏳</div>
+          <p>Waiting for the first order…</p>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state card">
+      <p>No open session. Create one to start collecting orders.</p>
+    </div>
+  }
+</div>

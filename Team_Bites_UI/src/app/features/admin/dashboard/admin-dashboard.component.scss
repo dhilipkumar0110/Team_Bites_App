@@ -1,0 +1,65 @@
+.highlight {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.stat-text {
+  font-size: 1.1rem !important;
+  line-height: 1.3;
+}
+
+.session-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  h3 {
+    font-size: 1.2rem;
+    margin: 0.5rem 0 0.25rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+}
+
+.banner-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.recent-section h2 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.session-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  strong {
+    margin-right: 0.5rem;
+  }
+
+  .muted {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+}

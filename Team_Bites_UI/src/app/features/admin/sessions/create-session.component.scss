@@ -1,0 +1,64 @@
+.form-card {
+  padding: 1.75rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-title {
+  font-size: 1rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.menu-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.65rem;
+}
+
+.menu-pick {
+  text-align: left;
+  padding: 0.85rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .pick-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .pick-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.success-banner {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--success-soft);
+  color: var(--success);
+  font-weight: 600;
+}

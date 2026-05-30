@@ -1,0 +1,64 @@
+<div class="login-page">
+  <div class="login-visual">
+    <div class="visual-content">
+      <span class="tag">Group lunch, simplified</span>
+      <h1>Stop counting biryanis in chat threads</h1>
+      <p>
+        Team Bites collects everyone’s dish picks in one place and consolidates counts
+        for you — chicken biryani, mutton biryani, and everything else.
+      </p>
+      <ul class="benefits">
+        <li>Open a session, share the menu</li>
+        <li>Team submits orders before the deadline</li>
+        <li>One-click summary for the restaurant</li>
+      </ul>
+    </div>
+    <div class="visual-plate">🍛</div>
+  </div>
+
+  <div class="login-panel">
+    <div class="login-card card">
+      <div class="login-header">
+        <span class="logo">🍽️</span>
+        <h2>Welcome back</h2>
+        <p>Sign in to your Team Bites workspace</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-field">
+          <label for="email">Work email</label>
+          <input id="email" type="email" formControlName="email" placeholder="you@company.com" />
+        </div>
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input id="password" type="password" formControlName="password" placeholder="••••••••" />
+        </div>
+
+        @if (error()) {
+          <div class="error-banner">{{ error() }}</div>
+        }
+
+        <button type="submit" class="btn btn-primary submit-btn" [disabled]="loading()">
+          {{ loading() ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+
+      <div class="demo-section">
+        <p class="demo-label">Try a demo account</p>
+        <div class="demo-chips">
+          @for (demo of demoAccounts; track demo.email) {
+            <button
+              type="button"
+              class="demo-chip"
+              [class]="'demo-' + demo.color"
+              (click)="fillDemo(demo.email)"
+            >
+              {{ demo.role }}
+            </button>
+          }
+        </div>
+        <p class="demo-hint">Password for all demos: <code>demo123</code></p>
+      </div>
+    </div>
+  </div>
+</div>

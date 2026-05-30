@@ -1,0 +1,20 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Billing & plans</h1>
+    <p>Platform subscription tiers and renewal dates</p>
+  </header>
+
+  <div class="plan-grid">
+    @for (p of plans; track p.plan) {
+      <article class="plan-card card">
+        <h3>{{ p.plan }}</h3>
+        <div class="price">{{ p.monthlyAmount | currency }}/mo</div>
+        <ul>
+          <li><strong>{{ p.seats }}</strong> seats included</li>
+          <li>Renews {{ p.renewalDate | date: 'longDate' }}</li>
+        </ul>
+        <button type="button" class="btn btn-secondary">Manage plan</button>
+      </article>
+    }
+  </div>
+</div>

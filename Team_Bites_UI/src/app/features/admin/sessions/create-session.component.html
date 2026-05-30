@@ -1,0 +1,43 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Create ordering session</h1>
+    <p>Start a new team lunch — pick dishes and set a deadline</p>
+  </header>
+
+  @if (saved()) {
+    <div class="success-banner card">Session opened — employees can order now (mock)</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="card form-card">
+    <div class="form-row">
+      <div class="form-field">
+        <label for="title">Session title</label>
+        <input id="title" formControlName="title" placeholder="June Team Lunch — Friday" />
+      </div>
+      <div class="form-field">
+        <label for="deadline">Order deadline</label>
+        <input id="deadline" type="datetime-local" formControlName="deadline" />
+      </div>
+    </div>
+
+    <h3 class="section-title">Menu for this session</h3>
+    <div class="menu-pick-grid">
+      @for (item of menuItems; track item.id) {
+        <button
+          type="button"
+          class="menu-pick"
+          [class.selected]="isSelected(item.id)"
+          (click)="toggleMenu(item.id)"
+        >
+          <span class="pick-name">{{ item.dishName }}</span>
+          <span class="pick-meta">{{ item.category }} · {{ item.type }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="form-actions">
+      <a routerLink="/admin/dashboard" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Open session</button>
+    </div>
+  </form>
+</div>

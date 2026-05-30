@@ -1,0 +1,56 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Dashboard</h1>
+    <p>Overview of your team’s food ordering</p>
+  </header>
+
+  <div class="stat-grid">
+    <div class="stat-card highlight">
+      <div class="stat-label">Active session</div>
+      <div class="stat-value stat-text">{{ activeSession?.title ?? 'None' }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Responses in</div>
+      <div class="stat-value">{{ submittedCount }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Still pending</div>
+      <div class="stat-value">{{ pendingCount }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Menu items</div>
+      <div class="stat-value">{{ menuCount }}</div>
+    </div>
+  </div>
+
+  @if (activeSession) {
+    <div class="card session-banner">
+      <div>
+        <span class="badge badge-open">Open</span>
+        <h3>{{ activeSession.title }}</h3>
+        <p>Deadline: {{ activeSession.deadline | date: 'EEEE, MMM d · h:mm a' }}</p>
+      </div>
+      <div class="banner-actions">
+        <a routerLink="/admin/sessions/live" class="btn btn-primary">Live dashboard</a>
+        <a routerLink="/admin/sessions/summary" class="btn btn-secondary">View summary</a>
+      </div>
+    </div>
+  }
+
+  <section class="recent-section">
+    <h2>Recent sessions</h2>
+    <div class="session-list">
+      @for (s of sessions; track s.id) {
+        <article class="card session-row">
+          <div>
+            <strong>{{ s.title }}</strong>
+            <span class="badge" [class.badge-open]="s.status === 'Open'" [class.badge-closed]="s.status === 'Closed'">
+              {{ s.status }}
+            </span>
+          </div>
+          <span class="muted">{{ s.deadline | date: 'mediumDate' }}</span>
+        </article>
+      }
+    </div>
+  </section>
+</div>

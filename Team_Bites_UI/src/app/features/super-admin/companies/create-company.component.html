@@ -1,0 +1,35 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Create company</h1>
+    <p>Onboard a new tenant and invite their company admin</p>
+  </header>
+
+  @if (saved()) {
+    <div class="success-banner card">Company created — invite sent to admin (mock)</div>
+  }
+
+  <div class="card form-card">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-field">
+        <label for="name">Company name</label>
+        <input id="name" formControlName="name" placeholder="Acme Corp" />
+      </div>
+      <div class="form-field">
+        <label for="plan">Subscription plan</label>
+        <select id="plan" formControlName="plan">
+          <option value="Starter">Starter — up to 15 seats</option>
+          <option value="Growth">Growth — up to 50 seats</option>
+          <option value="Enterprise">Enterprise — unlimited</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="adminEmail">Company admin email</label>
+        <input id="adminEmail" type="email" formControlName="adminEmail" placeholder="admin@company.com" />
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" routerLink="/super-admin/companies">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create & invite</button>
+      </div>
+    </form>
+  </div>
+</div>

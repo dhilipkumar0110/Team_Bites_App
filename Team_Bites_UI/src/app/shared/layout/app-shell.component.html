@@ -1,0 +1,45 @@
+<div class="shell" [attr.data-theme]="theme()">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-icon">🍽️</span>
+      <div>
+        <strong>Team Bites</strong>
+        <small>{{ portalLabel() }}</small>
+      </div>
+    </div>
+
+    <nav class="nav">
+      @for (item of navItems(); track item.route) {
+        <a
+          class="nav-link"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route.split('/').length <= 3 }"
+        >
+          <span class="nav-icon">{{ item.icon }}</span>
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar">{{ initials() }}</div>
+        <div class="user-meta">
+          <strong>{{ user()?.name }}</strong>
+          <span>{{ roleLabel() }}</span>
+          @if (user()?.companyName) {
+            <span class="company">{{ user()?.companyName }}</span>
+          }
+        </div>
+      </div>
+      <button type="button" class="btn btn-ghost logout-btn" (click)="logout()">
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <ng-content />
+  </main>
+</div>

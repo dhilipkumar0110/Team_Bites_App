@@ -1,0 +1,31 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Active session</h1>
+    <p>Join the current team lunch order</p>
+  </header>
+
+  @if (session) {
+    <div class="hero-card card">
+      <span class="badge badge-open">Orders open</span>
+      <h2>{{ session.title }}</h2>
+      <p class="deadline">
+        Order by {{ session.deadline | date: 'EEEE, MMM d · h:mm a' }}
+      </p>
+      <div class="preview-dishes">
+        @for (d of menuPreview; track d.id) {
+          <span class="dish-chip">{{ d.dishName }}</span>
+        }
+        @if (mockMenuCount > 4) {
+          <span class="dish-chip more">+{{ mockMenuCount - 4 }} more</span>
+        }
+      </div>
+      <a routerLink="/employee/menu" class="btn btn-primary cta">Choose your meal →</a>
+    </div>
+  } @else {
+    <div class="empty-state card">
+      <div class="empty-icon">🍽️</div>
+      <h3>No active session</h3>
+      <p>Your admin hasn’t opened an ordering session yet. Check back soon!</p>
+    </div>
+  }
+</div>

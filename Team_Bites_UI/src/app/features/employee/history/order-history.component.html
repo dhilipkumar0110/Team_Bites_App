@@ -1,0 +1,27 @@
+<div class="page">
+  <header class="page-header">
+    <h1>My orders</h1>
+    <p>Your past session submissions</p>
+  </header>
+
+  <div class="history-list">
+    @for (order of orders; track order.id) {
+      <article class="card history-card">
+        <div class="history-head">
+          <div>
+            <h3>{{ order.sessionTitle }}</h3>
+            <span class="date">{{ order.orderedAt | date: 'medium' }}</span>
+          </div>
+          <span class="badge" [class.badge-open]="order.status === 'Submitted'" [class.badge-closed]="order.status === 'Closed'">
+            {{ order.status }}
+          </span>
+        </div>
+        <ul>
+          @for (item of order.items; track item.dishName) {
+            <li>{{ item.qty }}× {{ item.dishName }}</li>
+          }
+        </ul>
+      </article>
+    }
+  </div>
+</div>

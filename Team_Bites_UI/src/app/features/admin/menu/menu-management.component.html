@@ -1,0 +1,61 @@
+<div class="page">
+  <header class="page-header row-header">
+    <div>
+      <h1>Manage menu</h1>
+      <p>Company-wide dish catalog for ordering sessions</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="showForm.set(!showForm())">
+      {{ showForm() ? 'Cancel' : '+ Add dish' }}
+    </button>
+  </header>
+
+  @if (showForm()) {
+    <form class="card add-form" [formGroup]="form" (ngSubmit)="addDish()">
+      <div class="form-row">
+        <div class="form-field">
+          <label>Dish name</label>
+          <input formControlName="dishName" placeholder="Fish Fry" />
+        </div>
+        <div class="form-field">
+          <label>Category</label>
+          <select formControlName="category">
+            <option>Biryani</option>
+            <option>Curry</option>
+            <option>Starters</option>
+            <option>Meals</option>
+            <option>Rice</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Type</label>
+          <select formControlName="type">
+            <option value="Veg">Veg</option>
+            <option value="Non-Veg">Non-Veg</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Description (optional)</label>
+        <input formControlName="description" />
+      </div>
+      <button type="submit" class="btn btn-primary">Save dish</button>
+    </form>
+  }
+
+  <div class="menu-grid">
+    @for (item of mock.menuItems; track item.id) {
+      <article class="card menu-card">
+        <div class="menu-card-top">
+          <h3>{{ item.dishName }}</h3>
+          <span class="badge" [class.badge-veg]="item.type === 'Veg'" [class.badge-nonveg]="item.type === 'Non-Veg'">
+            {{ item.type }}
+          </span>
+        </div>
+        <p class="category">{{ item.category }}</p>
+        @if (item.description) {
+          <p class="desc">{{ item.description }}</p>
+        }
+      </article>
+    }
+  </div>
+</div>

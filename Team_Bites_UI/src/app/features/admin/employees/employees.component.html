@@ -37,7 +37,7 @@
         @for (e of employees; track e.id) {
           <tr>
             <td><strong>{{ e.name }}</strong></td>
-            <td>{{ e.email }}</td>
+            <td>{{ e.name || '-' }}</td>
             <td>{{ e.role }}</td>
             <td>
               <span

@@ -23,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<SessionMenuItem> SessionMenuItems => Set<SessionMenuItem>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderLineItem> OrderLineItems => Set<OrderLineItem>();
+    public DbSet<InviteToken> InviteTokens => Set<InviteToken>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

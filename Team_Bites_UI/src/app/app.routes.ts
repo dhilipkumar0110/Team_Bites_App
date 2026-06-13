@@ -12,6 +12,18 @@ export const routes: Routes = [
       import('./features/auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'accept-invite',
+    loadComponent: () =>
+      import('./features/auth/accept-invite/accept-invite')
+        .then(m => m.AcceptInviteComponent)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password')
+        .then(m => m.ResetPasswordComponent)
+  },
+  {
     path: 'super-admin',
     canActivate: [authGuard, roleGuard('SuperAdmin')],
     loadComponent: () =>
@@ -121,6 +133,8 @@ export const routes: Routes = [
             (m) => m.OrderHistoryComponent
           ),
       },
+
+
     ],
   },
   { path: '**', redirectTo: 'login' },

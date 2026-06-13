@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using TeamBites.Application;
+using TeamBites.Application.Interfaces;
 using TeamBites.Infrastructure;
 using TeamBites.Infrastructure.Data;
+using TeamBites.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddCors(options =>
 {

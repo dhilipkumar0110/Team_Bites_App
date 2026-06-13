@@ -19,7 +19,7 @@ export interface SessionDto {
   sessionId: string;
   title: string;
   status: string;
-  deadline: string; 
+  deadline: string;
   createdAt: string;
 }
 
@@ -27,7 +27,7 @@ export interface MenuItemDto {
   id: string;
   dishName: string;
   category: string;
-  type : string;
+  type: string;
   description?: string;
 }
 export interface CreateSessionRequest {
@@ -78,6 +78,13 @@ export interface MyOrderDto {
   status: string;
 }
 
+export interface AcceptInviteResponse {
+  name: string;
+  email: string;
+  token: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -85,7 +92,7 @@ export class DashboardService {
 
   private baseUrl = 'https://localhost:7129/api'; // change if needed
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getEmployees(): Observable<EmployeeDto[]> {
     return this.http.get<EmployeeDto[]>(`${this.baseUrl}/users`);
@@ -103,22 +110,22 @@ export class DashboardService {
   }
 
   getSessionSummary(sessionId: string): Observable<DishSummaryDto[]> {
-  return this.http.get<DishSummaryDto[]>(
-    `${this.baseUrl}/sessions/${sessionId}/summary`
-  );
-}
+    return this.http.get<DishSummaryDto[]>(
+      `${this.baseUrl}/sessions/${sessionId}/summary`
+    );
+  }
 
   getSessionResponses(sessionId: string): Observable<SessionResponseDto[]> {
-  return this.http.get<SessionResponseDto[]>(
-    `${this.baseUrl}/sessions/${sessionId}/responses`
-  );
-}
+    return this.http.get<SessionResponseDto[]>(
+      `${this.baseUrl}/sessions/${sessionId}/responses`
+    );
+  }
 
-getRecentSessions(): Observable<SessionDto[]> {
-  return this.http.get<SessionDto[]>(`${this.baseUrl}/sessions/recent`);
-}
+  getRecentSessions(): Observable<SessionDto[]> {
+    return this.http.get<SessionDto[]>(`${this.baseUrl}/sessions/recent`);
+  }
 
- createSession(request: CreateSessionRequest): Observable<SessionDto> {
+  createSession(request: CreateSessionRequest): Observable<SessionDto> {
     return this.http.post<SessionDto>(`${this.baseUrl}/sessions`, request);
   }
 
@@ -135,6 +142,24 @@ getRecentSessions(): Observable<SessionDto[]> {
   }
 
   getMyOrders(): Observable<MyOrderDto[]> {
-  return this.http.get<MyOrderDto[]>(`${this.baseUrl}/orders/my`);
-}
+    return this.http.get<MyOrderDto[]>(`${this.baseUrl}/orders/my`);
+  }
+
+  acceptInvite(token: string): Observable<AcceptInviteResponse> {
+    return this.http.post<AcceptInviteResponse>(
+      `${this.baseUrl}/auth/accept-invite`,
+      { token }
+    );
+  }
+
+  resetPassword(payload: {
+    token: string;
+    newPassword: string;
+    confirmPassword: string;
+  }): Observable<void> {
+    return this.http.post<void>(
+      `${this.baseUrl}/auth/reset-password`,
+      payload
+    );
+  }
 }

@@ -1,0 +1,42 @@
+<!-- accept-invite.component.html -->
+<div class="invite-wrapper">
+  <div class="invite-card">
+
+    <!-- Logo / brand -->
+    <div class="brand">
+      <span class="brand-icon">🍛</span>
+      <span class="brand-name">Team Bites</span>
+    </div>
+
+    <!-- Loading state -->
+    @if (state() === 'loading') {
+      <div class="state-block">
+        <div class="spinner"></div>
+        <p class="state-text">Verifying your invite link…</p>
+      </div>
+    }
+
+    <!-- Success — will auto-redirect to reset-password -->
+    @if (state() === 'success') {
+      <div class="state-block">
+        <div class="success-icon">✓</div>
+        <h2 class="state-heading">Welcome, {{ userName() }}!</h2>
+        <p class="state-text">Your invite has been verified. Taking you to set your password…</p>
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+    }
+
+    <!-- Error state -->
+    @if (state() === 'error') {
+      <div class="state-block">
+        <div class="error-icon">✕</div>
+        <h2 class="state-heading">Link invalid or expired</h2>
+        <p class="state-text">{{ errorMessage() }}</p>
+        <p class="state-subtext">Please ask your admin to resend the invite.</p>
+      </div>
+    }
+
+  </div>
+</div>

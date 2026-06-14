@@ -113,7 +113,7 @@ public class SessionService : ISessionService
             o.UserId,
             o.User.Name,
             o.SubmittedAt,
-            o.LineItems.Select(l => new OrderLineDto(l.MenuItem.DishName, l.Quantity)).ToList()
+            o.LineItems.Select(l => new OrderLineDto(l.MenuItem?.DishName ?? l.DishName ?? "Custom dish", l.Quantity)).ToList()
         )).ToList();
     }
 
@@ -135,7 +135,7 @@ public class SessionService : ISessionService
         {
             foreach (var line in order.LineItems)
             {
-                var key = line.MenuItem.DishName;
+                var key = line.MenuItem?.DishName ?? line.DishName ?? "Custom dish";
                 if (!map.TryGetValue(key, out var entry))
                 {
                     entry = (line.MenuItem, 0, new HashSet<string>());
@@ -147,13 +147,13 @@ public class SessionService : ISessionService
             }
         }
 
-        return map.Values
-            .Select(v => new DishSummaryDto(
-                v.Item.DishName,
-                v.Item.Category,
-                v.Item.Type == MenuItemType.Veg ? "Veg" : "Non-Veg",
-                v.Qty,
-                v.Users.OrderBy(n => n).ToList()))
+        return map
+            .Select(kvp => new DishSummaryDto(
+                kvp.Value.Item?.DishName ?? kvp.Key,          // actual dish name from key
+                kvp.Value.Item?.Category ?? "Custom",          // "Custom" for custom dishes
+                kvp.Value.Item?.Type == MenuItemType.Veg ? "Veg" : "Non-Veg",
+                kvp.Value.Qty,
+                kvp.Value.Users.OrderBy(n => n).ToList()))
             .OrderByDescending(d => d.TotalQty)
             .ToList();
     }

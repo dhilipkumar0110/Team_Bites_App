@@ -2,6 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { MockDataService } from '../../../core/services/mock-data.service';
 import { DashboardService, DishSummaryDto, SessionDto } from '../../../core/services/dashboard-service';
 import { of, switchMap } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';  // add this import
+
 
 @Component({
   selector: 'app-session-summary',
@@ -16,36 +18,43 @@ export class SessionSummaryComponent {
   session: SessionDto | null = null;
   summary: DishSummaryDto[] = [];
   private sessionService = inject(DashboardService);
+  private readonly route = inject(ActivatedRoute);
+
 
   ngOnInit(): void {
     this.loadData();
   }
 
   loadData() {
-    this.sessionService.getRecentSessions().pipe(
+    const sessionId = this.route.snapshot.queryParamMap.get('sessionId');
 
-      switchMap((sessions) => {
-        if (!sessions || sessions.length === 0) {
-          return of(null);
-        }
-        this.session =
-          sessions.find(s => s.status === 'Open') ?? sessions[0];
-
-        if (!this.session) {
-          return of(null);
-        }
-        return this.sessionService.getSessionSummary(this.session.sessionId);
-      })
-
-    ).subscribe({
-      next: (res) => {
-        if (!res) return;
-        this.summary = res;
-      },
-      error: (err) => {
-        console.error('Error loading summary', err);
-      }
-    });
+    if (sessionId) {
+      // came from dashboard "View summary" — load that specific session
+      this.sessionService.getRecentSessions().subscribe({
+        next: (sessions) => {
+          this.session = sessions.find(s => s.sessionId === sessionId) ?? null;
+          if (!this.session) return;
+          this.sessionService.getSessionSummary(sessionId).subscribe({
+            next: (res) => this.summary = res ?? [],
+            error: (err) => console.error('Error loading summary', err)
+          });
+        },
+        error: (err) => console.error('Error loading sessions', err)
+      });
+    } else {
+      // no sessionId — default to open/first session (existing behaviour)
+      this.sessionService.getRecentSessions().pipe(
+        switchMap((sessions) => {
+          if (!sessions || sessions.length === 0) return of(null);
+          this.session = sessions.find(s => s.status === 'Open') ?? sessions[0];
+          if (!this.session) return of(null);
+          return this.sessionService.getSessionSummary(this.session.sessionId);
+        })
+      ).subscribe({
+        next: (res) => { if (res) this.summary = res; },
+        error: (err) => console.error('Error loading summary', err)
+      });
+    }
   }
 
   get totalItems(): number {
@@ -66,10 +75,20 @@ export class SessionSummaryComponent {
 
   closeSession(): void {
     const s = this.session;
-    if (s) {
-      s.status = 'Closed';
-      this.closed.set(true);
+    if (!s) {
+      return;
     }
+
+    this.sessionService.closeSession(s.sessionId).subscribe({
+      next: () => {
+        s.status = 'Closed';
+        this.closed.set(true);
+      },
+      error: (err) => {
+        console.error('Failed to close session', err);
+        alert('Failed to close session.');
+      }
+    });
   }
 
   exportCsv(): void {

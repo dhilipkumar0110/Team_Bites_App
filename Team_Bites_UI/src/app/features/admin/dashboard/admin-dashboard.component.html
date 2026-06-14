@@ -48,9 +48,18 @@
               {{ s.status }}
             </span>
           </div>
-          <span class="muted">{{ s.deadline | date: 'mediumDate' }}</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="muted">{{ s.deadline | date: 'mediumDate' }}</span>
+            <a [routerLink]="['/admin/sessions/summary']"
+              [queryParams]="{ sessionId: s.sessionId }"
+              class="btn btn-secondary btn-sm">
+              View summary
+            </a>
+          </div>
         </article>
       }
     </div>
   </section>
 </div>
+
+<app-loader /> 

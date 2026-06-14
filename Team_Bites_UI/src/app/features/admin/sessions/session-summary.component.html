@@ -25,7 +25,12 @@
       @for (d of summary; track d.dishName) {
         <article class="card summary-card">
           <div class="qty-badge">{{ d.totalQty }}</div>
-          <h3>{{ d.dishName }}</h3>
+          <h3>
+    {{ d.dishName }}
+    @if (d.category === 'Custom') {
+      <span class="custom-badge">✦ Custom</span>
+    }
+  </h3>
           <p class="meta">{{ d.category }} · {{ d.type }}</p>
           <p class="who">
             <span class="label">Ordered by:</span>

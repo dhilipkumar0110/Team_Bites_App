@@ -56,8 +56,11 @@ export interface InviteRequest {
 }
 
 export interface OrderLineDto {
-  menuItemId: string;
+  menuItemId: string | null;   // was string, now nullable
+  dishName: string;
   qty: number;
+  isCustom: boolean;
+  type?: string;
 }
 
 export interface OrdersListDto {
@@ -160,6 +163,13 @@ export class DashboardService {
     return this.http.post<void>(
       `${this.baseUrl}/auth/reset-password`,
       payload
+    );
+  }
+
+  closeSession(sessionId: string) {
+    return this.http.put(
+      `${this.baseUrl}/sessions/${sessionId}/close`,
+      {}
     );
   }
 }

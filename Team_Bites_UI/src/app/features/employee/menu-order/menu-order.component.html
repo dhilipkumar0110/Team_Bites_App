@@ -11,62 +11,120 @@
   </header>
 
   @if (session) {
-    <div class="menu-layout">
-      <div class="menu-main">
-        @for (cat of categories(); track cat) {
-          <section class="category-section">
-            <h2>{{ cat }}</h2>
-            <div class="dish-grid">
-              @for (dish of itemsByCategory(cat); track dish.id) {
-                <article class="card dish-card">
-                  <div class="dish-top">
-                    <h3>{{ dish.dishName }}</h3>
-                    <span
-                      class="badge"
-                      [class.badge-veg]="dish.type === 'Veg'"
-                      [class.badge-nonveg]="dish.type === 'Non-Veg'"
-                    >
-                      {{ dish.type }}
-                    </span>
-                  </div>
-                  @if (dish.description) {
-                    <p class="desc">{{ dish.description }}</p>
-                  }
-                  <div class="qty-control">
-                    <button type="button" class="qty-btn" (click)="changeQty(dish.id, dish.dishName, dish.type == 'Veg' ? 'Veg' : 'Non-Veg', -1)">−</button>
-                    <span class="qty-val">{{ getQty(dish.id) }}</span>
-                    <button type="button" class="qty-btn" (click)="changeQty(dish.id, dish.dishName, dish.type == 'Veg' ? 'Veg' : 'Non-Veg', 1)">+</button>
-                  </div>
-                </article>
-              }
+  <div class="menu-layout">
+    <div class="menu-main">
+      @for (cat of categories(); track cat) {
+      <section class="category-section">
+        <h2>{{ cat }}</h2>
+        <div class="dish-grid">
+          @for (dish of itemsByCategory(cat); track dish.id) {
+          <article class="card dish-card">
+            <div class="dish-top">
+              <h3>{{ dish.dishName }}</h3>
+              <span class="badge" [class.badge-veg]="dish.type === 'Veg'"
+                [class.badge-nonveg]="dish.type === 'Non-Veg'">
+                {{ dish.type }}
+              </span>
             </div>
-          </section>
-        }
-      </div>
+            @if (dish.description) {
+            <p class="desc">{{ dish.description }}</p>
+            }
+            <div class="qty-control">
+              <button type="button" class="qty-btn"
+                (click)="changeQty(dish.id, dish.dishName, dish.type == 'Veg' ? 'Veg' : 'Non-Veg', -1)">−</button>
+              <span class="qty-val">{{ getQty(dish.id) }}</span>
+              <button type="button" class="qty-btn"
+                (click)="changeQty(dish.id, dish.dishName, dish.type == 'Veg' ? 'Veg' : 'Non-Veg', 1)">+</button>
+            </div>
+          </article>
+          }
+        </div>
+      </section>
+      }
+      <!-- ── Custom dish section ───────────────────────────────────── -->
+      <section class="category-section custom-section">
+        <h2>
+          <span class="custom-icon">✦</span>
+          Want something else?
+        </h2>
+        <p class="custom-hint">
+          Can't find your dish above? Add it here — your admin will see it as a special request.
+        </p>
 
-      <aside class="cart-panel card">
-        <h3>Your order</h3>
-        @if (cart().length) {
-          <ul class="cart-list">
-            @for (line of cart(); track line.dishId) {
-              <li>
-                <span>{{ line.dishName }}</span>
+        <div class="custom-add-row">
+          <input type="text" class="custom-input" placeholder="e.g. Fish curry, Egg appam..."
+            [(ngModel)]="customDishName" (keydown.enter)="addCustomDish()" />
+          <select class="custom-type-select" [(ngModel)]="customDishType">
+            <option value="Veg">Veg</option>
+            <option value="Non-Veg">Non-Veg</option>
+          </select>
+          <button type="button" class="btn btn-outline" (click)="addCustomDish()" [disabled]="!customDishName.trim()">
+            + Add
+          </button>
+        </div>
+
+        <!-- Custom dish error -->
+        @if (customError()) {
+        <p class="custom-error">{{ customError() }}</p>
+        }
+
+        <!-- Added custom dishes list -->
+        @if (customCart().length) {
+        <div class="custom-list">
+          @for (item of customCart(); track item.dishId) {
+          <div class="custom-tag">
+            <span class="custom-dot" [class.dot-veg]="item.type === 'Veg'" [class.dot-nonveg]="item.type === 'Non-Veg'">
+            </span>
+            <span class="custom-name">{{ item.dishName }}</span>
+            <div class="qty-control qty-control-sm">
+              <button type="button" class="qty-btn" (click)="changeCustomQty(item.dishId, -1)">−</button>
+              <span class="qty-val">{{ item.qty }}</span>
+              <button type="button" class="qty-btn" (click)="changeCustomQty(item.dishId, 1)">+</button>
+            </div>
+            <button type="button" class="remove-btn" (click)="removeCustomDish(item.dishId)">✕</button>
+          </div>
+          }
+        </div>
+        }
+      </section>
+
+    </div>
+
+
+
+    <aside class="cart-panel card">
+      <h3>Your order</h3>
+      @if (cart().length || customCart().length) {
+      <ul class="cart-list">
+        @for (line of cart(); track line.dishId) {
+        <li>
+          <span>{{ line.dishName }}</span>
+          <span>×{{ line.qty }}</span>
+        </li>
+        }
+         <!-- Custom items — shown with a ✦ marker -->
+            @for (line of customCart(); track line.dishId) {
+              <li class="cart-custom-item">
+                <span>
+                  <span class="cart-custom-badge">✦</span>
+                  {{ line.dishName }}
+                </span>
                 <span>×{{ line.qty }}</span>
               </li>
             }
-          </ul>
-          <p class="cart-total">{{ cartTotal() }} item(s)</p>
-          <button type="button" class="btn btn-primary submit" (click)="submitOrder()" [disabled]="submitted()">
-            {{ submitted() ? 'Submitted!' : 'Submit order' }}
-          </button>
-        } @else {
-          <p class="cart-empty">Add dishes from the menu</p>
-        }
-      </aside>
-    </div>
+      </ul>
+      <p class="cart-total">{{ cartTotal() }} item(s)</p>
+      <button type="button" class="btn btn-primary submit" (click)="submitOrder()" [disabled]="submitted()">
+        {{ submitted() ? 'Submitted!' : 'Submit order' }}
+      </button>
+      } @else {
+      <p class="cart-empty">Add dishes from the menu</p>
+      }
+    </aside>
+  </div>
   } @else {
-    <div class="empty-state card">
-      <p>No open session right now.</p>
-    </div>
+  <div class="empty-state card">
+    <p>No open session right now.</p>
+  </div>
   }
 </div>

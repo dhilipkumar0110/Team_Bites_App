@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities;
 using TeamBites.Application.DTOs;
 using TeamBites.Application.Interfaces;
 using TeamBites.Domain.Entities;
@@ -36,16 +37,32 @@ public class OrderService : IOrderService
         //if (session.Deadline < DateTime.UtcNow)
         //    throw new InvalidOperationException("Order deadline has passed.");
 
-        var allowedMenuIds = session.SessionMenuItems.Select(sm => sm.MenuItemId).ToHashSet();
         var lines = request.Items.Where(i => i.Qty > 0).ToList();
+
         if (lines.Count == 0)
             throw new InvalidOperationException("Order must contain at least one item.");
 
-        if (lines.Any(l => !allowedMenuIds.Contains(l.MenuItemId)))
+
+        var allowedMenuIds = session.SessionMenuItems.Select(sm => sm.MenuItemId).ToHashSet();
+        var invalidLines = lines
+            .Where(l => !l.IsCustom && (l.MenuItemId is null || !allowedMenuIds.Contains(l.MenuItemId.Value)))
+            .ToList();
+
+        if (invalidLines.Count > 0)
             throw new InvalidOperationException("Invalid menu item for this session.");
 
+        // Custom lines must have a dish name
+        var invalidCustom = lines
+            .Where(l => l.IsCustom && string.IsNullOrWhiteSpace(l.DishName))
+            .ToList();
+
+        if (invalidCustom.Count > 0)
+            throw new InvalidOperationException("Custom dishes must have a name.");
+
         var existing = await _db.Orders
-            .FirstOrDefaultAsync(o => o.SessionId == request.SessionId && o.UserId == _currentUser.UserId, cancellationToken);
+            .FirstOrDefaultAsync(
+                o => o.SessionId == request.SessionId && o.UserId == _currentUser.UserId,
+                cancellationToken);
 
         if (existing is not null)
         {
@@ -55,15 +72,18 @@ public class OrderService : IOrderService
 
         var order = new Order
         {
-            Id = Guid.NewGuid(),
-            SessionId = request.SessionId,
-            UserId = _currentUser.UserId.Value,
+            Id          = Guid.NewGuid(),
+            SessionId   = request.SessionId,
+            UserId      = _currentUser.UserId.Value,
             SubmittedAt = DateTime.UtcNow,
-            LineItems = lines.Select(l => new OrderLineItem
+            LineItems   = lines.Select(l => new OrderLineItem
             {
-                Id = Guid.NewGuid(),
-                MenuItemId = l.MenuItemId,
-                Quantity = l.Qty
+                Id         = Guid.NewGuid(),
+                MenuItemId = l.IsCustom ? null : l.MenuItemId,   // null for custom
+                Quantity   = l.Qty,
+                IsCustom   = l.IsCustom,
+                DishName   = l.IsCustom ? l.DishName!.Trim() : null,
+                Type       = l.Type
             }).ToList()
         };
 
@@ -94,7 +114,10 @@ public class OrderService : IOrderService
             o.SessionId,
             o.Session.Title,
             o.SubmittedAt,
-            o.LineItems.Select(l => new OrderLineDto(l.MenuItem.DishName, l.Quantity)).ToList(),
+            o.LineItems.Select(l => new OrderLineDto(
+    l.MenuItem?.DishName ?? l.DishName ?? "Custom dish",
+    l.Quantity
+)).ToList(),
             o.Session.Status == SessionStatus.Closed ? "Closed" : "Submitted"
         )).ToList();
     }

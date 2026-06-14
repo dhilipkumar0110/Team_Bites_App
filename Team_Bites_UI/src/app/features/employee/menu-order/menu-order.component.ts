@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { MockDataService } from '../../../core/services/mock-data.service';
 import { DashboardService, MenuItemDto } from '../../../core/services/dashboard-service';
 import { of, switchMap } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+
 
 interface CartLine {
   dishId: string;
@@ -11,9 +13,17 @@ interface CartLine {
   qty: number;
 }
 
+interface CustomCartLine {
+  dishId: string;     // generated UUID so each custom dish is uniquely trackable
+  dishName: string;
+  type: 'Veg' | 'Non-Veg';
+  qty: number;
+}
+
 @Component({
   selector: 'app-menu-order',
   standalone: true,
+  imports: [FormsModule],
   templateUrl: './menu-order.component.html',
   styleUrl: './menu-order.component.scss',
 })
@@ -29,6 +39,13 @@ export class MenuOrderComponent {
   readonly menuItems = signal<MenuItemDto[]>([]);
 
   session: any = null;
+
+    readonly customCart  = signal<CustomCartLine[]>([]);
+  readonly customError = signal<string | null>(null);
+
+   customDishName = '';
+  customDishType: 'Veg' | 'Non-Veg' = 'Non-Veg';
+
 
 
   ngOnInit(): void {
@@ -100,20 +117,76 @@ export class MenuOrderComponent {
     this.cart.set(current);
   }
 
-  readonly cartTotal = computed(() => this.cart().reduce((s, c) => s + c.qty, 0));
+  readonly cartTotal = computed(() =>
+    this.cart().reduce((s, c) => s + c.qty, 0) +
+    this.customCart().reduce((s, c) => s + c.qty, 0)
+  );
+
+  addCustomDish(): void {
+    const name = this.customDishName.trim();
+    if (!name) return;
+ 
+    // Prevent duplicate custom dish names (case-insensitive)
+    const duplicate = this.customCart()
+      .some(c => c.dishName.toLowerCase() === name.toLowerCase());
+ 
+    if (duplicate) {
+      this.customError.set(`"${name}" is already in your order.`);
+      setTimeout(() => this.customError.set(null), 3000);
+      return;
+    }
+ 
+    this.customCart.update(list => [
+      ...list,
+      {
+        dishId:   crypto.randomUUID(),  // client-side unique id
+        dishName: name,
+        type:     this.customDishType,
+        qty:      1
+      }
+    ]);
+ 
+    // Reset input
+    this.customDishName = '';
+    this.customError.set(null);
+  }
+ 
+  changeCustomQty(dishId: string, delta: number): void {
+    this.customCart.update(list => {
+      const updated = list.map(c =>
+        c.dishId === dishId ? { ...c, qty: c.qty + delta } : c
+      );
+      return updated.filter(c => c.qty > 0);  // remove if qty hits 0
+    });
+  }
+ 
+  removeCustomDish(dishId: string): void {
+    this.customCart.update(list => list.filter(c => c.dishId !== dishId));
+  }
 
   submitOrder(): void {
     if (!this.cart().length || !this.session) return;
 
+     const regularItems = this.cart().map(item => ({
+      menuItemId: item.dishId,
+      dishName:   item.dishName,
+      qty:        item.qty,
+      isCustom:   false
+    }));
+ 
+    const customItems = this.customCart().map(item => ({
+      menuItemId: null,           // no menu ID — admin sees this as a special request
+      dishName:   item.dishName,
+      qty:        item.qty,
+      isCustom:   true,
+      type:       item.type
+    }));
+ 
     const request = {
       sessionId: this.session.sessionId,
-
-      // 🔥 Map your existing structure → API structure
-      items: this.cart().map(item => ({
-        menuItemId: item.dishId,   // ✅ mapping here
-        qty: item.qty         // ✅ mapping here
-      }))
+      items:     [...regularItems, ...customItems]
     };
+ 
 
     this.sessionService.submitOrder(request).subscribe({
 

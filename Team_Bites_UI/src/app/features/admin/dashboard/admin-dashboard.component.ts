@@ -4,11 +4,13 @@ import { RouterLink } from '@angular/router';
 import { MockDataService } from '../../../core/services/mock-data.service';
 import { DashboardService, EmployeeDto, MenuItemDto, SessionDto, SessionResponseDto } from '../../../core/services/dashboard-service';
 import { forkJoin, of, switchMap } from 'rxjs';
+import { LoaderService } from '../../../core/services/loader-service';
+import { Loader } from "../../../shared/loader/loader";
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, Loader],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
 })
@@ -16,6 +18,7 @@ import { forkJoin, of, switchMap } from 'rxjs';
 export class AdminDashboardComponent {
 
   private readonly service = inject(DashboardService);
+   private readonly loader = inject(LoaderService);
   private readonly mock = inject(MockDataService);
   //readonly sessions = this.mock.sessions;
   // readonly employees = this.mock.employees;
@@ -48,6 +51,7 @@ get menuCount(): number {
 }
 
 loadData() {
+  this.loader.show();
    this.service.getEmployees().subscribe({
       next: (emp) => this.employees = emp,
       error: (err) => console.error('Employees error', err)
@@ -81,6 +85,7 @@ loadData() {
         console.log('Menu API Result:', result.menu);
 
         this.menuItems = result.menu;
+        this.loader.hide();
       },
       error: (err) => {
         console.error('Dashboard error', err);

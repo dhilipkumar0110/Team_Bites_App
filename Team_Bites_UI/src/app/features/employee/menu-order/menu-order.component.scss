@@ -134,3 +134,162 @@
 .submit {
   width: 100%;
 }
+
+
+/* ── Paste these at the bottom of your menu-order.component.scss ──────────── */
+
+/* Custom dish section header */
+.custom-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-icon {
+  font-size: 14px;
+  color: #BA7517;
+}
+
+.custom-hint {
+  font-size: 13px;
+  color: var(--color-text-secondary, #888);
+  margin: -8px 0 14px;
+  line-height: 1.5;
+}
+
+/* Input row */
+.custom-add-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.custom-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 9px 12px;
+  border: 1px solid #d9d8d4;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: #0F6E56; }
+  &::placeholder { color: #bbb; }
+}
+
+.custom-type-select {
+  padding: 9px 10px;
+  border: 1px solid #d9d8d4;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+
+  &:focus { border-color: #0F6E56; }
+}
+
+.btn-outline {
+  padding: 9px 16px;
+  border: 1px solid #0F6E56;
+  border-radius: 8px;
+  background: transparent;
+  color: #0F6E56;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) { background: #E1F5EE; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+/* Error message */
+.custom-error {
+  font-size: 12px;
+  color: #A32D2D;
+  margin: 6px 0 0;
+}
+
+/* Custom dish tag list */
+.custom-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.custom-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FAEEDA;
+  border: 1px solid #EF9F27;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.custom-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid;
+
+  &.dot-veg    { border-color: #3B6D11; background: #EAF3DE; }
+  &.dot-nonveg { border-color: #A32D2D; background: #FCEBEB; }
+}
+
+.custom-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #633806;
+}
+
+/* Smaller qty control for custom tags */
+.qty-control-sm {
+  gap: 4px;
+
+  .qty-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+  }
+
+  .qty-val {
+    font-size: 13px;
+    min-width: 16px;
+  }
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #854F0B;
+  font-size: 13px;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 1; }
+}
+
+/* Cart panel — custom item row */
+.cart-custom-item {
+  color: #633806;
+}
+
+.cart-custom-badge {
+  font-size: 10px;
+  margin-right: 4px;
+  color: #BA7517;
+}

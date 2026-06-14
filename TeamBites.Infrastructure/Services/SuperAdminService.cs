@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using TeamBites.Application.DTOs;
 using TeamBites.Application.Interfaces;
 using TeamBites.Domain.Entities;
@@ -12,11 +13,13 @@ public class SuperAdminService : ISuperAdminService
 {
     private readonly AppDbContext _db;
     private readonly AuditService _audit;
+    private readonly IEmailService _email;
 
-    public SuperAdminService(AppDbContext db, AuditService audit)
+    public SuperAdminService(AppDbContext db, AuditService audit, IEmailService email)
     {
         _db = db;
         _audit = audit;
+        _email=email;
     }
 
     public async Task<IReadOnlyList<CompanyDto>> GetCompaniesAsync(CancellationToken cancellationToken = default)
@@ -74,6 +77,29 @@ public class SuperAdminService : ISuperAdminService
         _db.Users.Add(admin);
         await _audit.LogAsync($"Company created: {company.Name}", company.Name, companyId, cancellationToken);
         await _db.SaveChangesAsync(cancellationToken);
+
+        var rawToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+        _db.InviteTokens.Add(new InviteToken
+        {
+            Id        = Guid.NewGuid(),
+            UserId    = admin.Id,
+            Token     = rawToken,
+            ExpiresAt = DateTime.UtcNow.AddHours(48),
+            Used      = false
+        });
+
+        await _audit.LogAsync($"User invited: {request.AdminEmail.Trim().ToLowerInvariant()}", ct: cancellationToken);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _email.SendInviteEmailAsync(request.AdminEmail.Trim(), request.AdminEmail.Split('@')[0], rawToken, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            // Log but swallow — user is saved; admin can resend manually
+            Console.Error.WriteLine($"[Email] Failed to send invite to {request.AdminEmail.Trim().ToLowerInvariant()}: {ex.Message}");
+        }
 
         return new CompanyDto(company.Id, company.Name, EntityMapper.PlanToString(company.PlanName),
             company.CreatedAt, admin.Email, company.SeatLimit);

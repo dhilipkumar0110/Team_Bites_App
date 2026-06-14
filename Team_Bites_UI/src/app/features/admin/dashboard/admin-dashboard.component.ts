@@ -62,6 +62,7 @@ loadData() {
 
       switchMap(sessions => {
         this.sessions = sessions;
+        this.loader.hide();
 
         if (!sessions || sessions.length === 0) {
           return of(null);

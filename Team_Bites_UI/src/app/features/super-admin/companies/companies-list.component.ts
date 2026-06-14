@@ -1,7 +1,8 @@
 import { DatePipe, LowerCasePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MockDataService } from '../../../core/services/mock-data.service';
+import { CompanyDto, SuperAdminServices } from '../../../core/services/super-admin-service';
 
 @Component({
   selector: 'app-companies-list',
@@ -10,11 +11,35 @@ import { MockDataService } from '../../../core/services/mock-data.service';
   templateUrl: './companies-list.component.html',
   styleUrl: './companies-list.component.scss',
 })
-export class CompaniesListComponent {
-  readonly companies = inject(MockDataService).companies;
+export class CompaniesListComponent implements OnInit {
+  private readonly superAdminService = inject(SuperAdminServices);
+
+  companies: CompanyDto[] = [];
+  loading = false;
+  errorMessage = '';
+
+  ngOnInit(): void {
+    this.loadCompanies();
+  }
+
+  loadCompanies(): void {
+    this.loading = true;
+
+    this.superAdminService.getCompanies().subscribe({
+      next: (companies) => {
+        this.companies = companies;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Failed to load companies', error);
+        this.errorMessage = 'Failed to load companies';
+        this.loading = false;
+      }
+    });
+  }
 
   get enterpriseCount(): number {
-    return this.companies.filter((c) => c.plan === 'Enterprise').length;
+    return this.companies.filter(c => c.planName === 'Enterprise').length;
   }
 
   get totalSeats(): number {

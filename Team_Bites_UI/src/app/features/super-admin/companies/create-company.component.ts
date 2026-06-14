@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { CreateCompanyRequest, SuperAdminServices } from '../../../core/services/super-admin-service';
 
 @Component({
   selector: 'app-create-company',
@@ -12,6 +13,7 @@ import { Router, RouterLink } from '@angular/router';
 export class CreateCompanyComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly superAdminService = inject(SuperAdminServices);
 
   readonly saved = signal(false);
 
@@ -26,7 +28,28 @@ export class CreateCompanyComponent {
       this.form.markAllAsTouched();
       return;
     }
-    this.saved.set(true);
+
+    const request: CreateCompanyRequest = {
+      name: this.form.controls.name.value,
+      plan: this.form.controls.plan.value,
+      adminEmail: this.form.controls.adminEmail.value
+    };
+    
+     this.superAdminService.createCompany(request).subscribe({
+      next: (response) => {
+        console.log('Company created successfully', response);
+
+        this.saved.set(true);
+        setTimeout(() => {
+          this.router.navigate(['/super-admin/companies']);
+        }, 1200);
+      },
+      error: (error) => {
+        console.error('Failed to create company', error);
+
+      }
+    });
+
     setTimeout(() => this.router.navigate(['/super-admin/companies']), 1200);
   }
 }

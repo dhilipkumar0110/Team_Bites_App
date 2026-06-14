@@ -37,8 +37,8 @@
         @for (c of companies; track c.id) {
           <tr>
             <td><strong>{{ c.name }}</strong></td>
-            <td><span class="plan-badge plan-{{ c.plan | lowercase }}">{{ c.plan }}</span></td>
-            <td>{{ c.adminEmail }}</td>
+            <td><span class="plan-badge plan-{{ c.planName | lowercase }}">{{ c.planName }}</span></td>
+            <td>{{ c.name }}</td>
             <td>{{ c.seats }}</td>
             <td>{{ c.createdAt | date: 'mediumDate' }}</td>
           </tr>

@@ -4,15 +4,15 @@ import { Observable } from 'rxjs';
 
 export interface CreateCompanyRequest {
   name: string;
-  planName: string;
-  seatLimit: number;
+  plan: string;
+  adminEmail: string;
 }
 
 export interface CompanyDto {
   id: string;
   name: string;
   planName: string;
-  seatLimit: number;
+  seats: number;
   createdAt: string;
 }
 
@@ -21,11 +21,17 @@ export interface CompanyDto {
 })
 export class SuperAdminServices {
 
-  private baseUrl = 'https://localhost:7129/api'; // change to your API URL
+  private baseUrl = 'https://localhost:7129/api/superadmin'; // change to your API URL
 
   constructor(private http: HttpClient) {}
 
   createCompany(request: CreateCompanyRequest): Observable<CompanyDto> {
     return this.http.post<CompanyDto>(`${this.baseUrl}/companies`, request);
+  }
+
+   getCompanies(): Observable<CompanyDto[]> {
+    return this.http.get<CompanyDto[]>(
+      `${this.baseUrl}/companies`
+    );
   }
 }

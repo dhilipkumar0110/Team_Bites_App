@@ -1,6 +1,6 @@
 namespace TeamBites.Application.DTOs;
 
-public record CompanyDto(Guid Id, string Name, string Plan, DateTime CreatedAt, string AdminEmail, int Seats);
+public record CompanyDto(Guid Id, string Name, string PlanName, DateTime CreatedAt, string AdminEmail, int Seats);
 
 public record CreateCompanyRequest(string Name, string Plan, string AdminEmail);
 

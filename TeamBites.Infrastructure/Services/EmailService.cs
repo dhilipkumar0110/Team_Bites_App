@@ -10,6 +10,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using TeamBites.Application.Interfaces;
 using MimeKit;
+using TeamBites.Infrastructure.Helper;
 
 namespace TeamBites.Infrastructure.Services;
 
@@ -27,6 +28,8 @@ public class EmailSettings
 public class EmailService(IOptions<EmailSettings> options, ILogger<EmailService> logger) : IEmailService
 {
     private readonly EmailSettings _settings = options.Value;
+    private EncryptDecryptor EncryptDecryptHelper { get; } = new EncryptDecryptor();
+
 
     public async Task SendInviteEmailAsync(
         string toEmail, string toName, string inviteToken, CancellationToken ct = default)
@@ -89,9 +92,10 @@ public class EmailService(IOptions<EmailSettings> options, ILogger<EmailService>
         message.Subject = subject;
         message.Body = new TextPart("html") { Text = htmlBody };
 
+        string decryptedPassword = EncryptDecryptHelper.DecryptPassword(_settings.Password);
         using var client = new SmtpClient();
         await client.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls, ct);
-        await client.AuthenticateAsync(_settings.Username, _settings.Password, ct);
+        await client.AuthenticateAsync(_settings.Username, decryptedPassword, ct);
         await client.SendAsync(message, ct);
         await client.DisconnectAsync(true, ct);
     }
